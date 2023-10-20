@@ -1,16 +1,27 @@
-export const App = () => {
-  return (
-    <div
-      style={{
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontSize: 40,
-        color: '#010101'
-      }}
-    >
-      React homework template
-    </div>
-  );
-};
+import { Component } from 'react';
+import { fetchPics } from './services/api';
+
+export class App extends Component {
+  state = {
+    pictures: null,
+    isLoading: false,
+    error: null,
+  };
+
+  feltchAllPics = async () => {
+    try {
+      const pictures = await fetchPics();
+      console.log('pictures: ', pictures);
+
+      this.setState({ pictures: pictures });
+    } catch (error) {}
+  };
+
+  componentDidMount() {
+    this.feltchAllPics();
+  }
+
+  render() {
+    return <div></div>;
+  }
+}
