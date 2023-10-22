@@ -1,9 +1,10 @@
-.galleryItem {
+.galleryList {
   margin: 10px;
+  flex: 0 1 calc(33.33% - 20px);
 }
 
-.img {
-  max-width: 200px;
-  height: auto;
-  box-sizing: border-box;
+.galleryPic {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
 }
