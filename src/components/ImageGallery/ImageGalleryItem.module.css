@@ -1,0 +1,9 @@
+.galleryItem {
+  margin: 10px;
+}
+
+.img {
+  max-width: 200px;
+  height: auto;
+  box-sizing: border-box;
+}
