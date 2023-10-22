@@ -68,7 +68,7 @@ export class App extends Component {
       Array.isArray(this.state.pictures) && this.state.pictures.length;
 
     return (
-      <div>
+      <div className='container'>
         <header className="searchbar">
           <form className="form" onSubmit={this.handleSearchSubmit}>
             <button type="submit" className="button">
