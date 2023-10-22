@@ -1,5 +1,9 @@
-export function ImageGalleryItem() {
-  <li class="gallery-item">
-    <img src="" alt="" />
-  </li>;
+import css from './ImageGalleryItem.module.css';
+
+export function ImageGalleryItem({ pictureUrl }) {
+  return (
+    <li className={css.galleryItem}>
+      <img src={pictureUrl} alt="" />
+    </li>
+  );
 }
