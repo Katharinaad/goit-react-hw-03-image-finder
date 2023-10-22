@@ -2,9 +2,10 @@ import { Component } from 'react';
 import { fetchPics, findPictureByName } from './services/api';
 // import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
-import { Loader } from './Loader/Loader';
+
 import { Button } from './Button/Button';
 import { Modal } from './Modal/Modal';
+import { RotatingLines } from 'react-loader-spinner';
 
 export class App extends Component {
   state = {
@@ -68,7 +69,7 @@ export class App extends Component {
       Array.isArray(this.state.pictures) && this.state.pictures.length;
 
     return (
-      <div className='container'>
+      <div className="container">
         <header className="searchbar">
           <form className="form" onSubmit={this.handleSearchSubmit}>
             <button type="submit" className="button">
@@ -86,7 +87,24 @@ export class App extends Component {
         </header>
 
         {showPics && <ImageGallery pictures={this.state.pictures} />}
-        <Loader />
+        {this.state.isLoading && (
+          <div
+            style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+            }}
+          >
+            <RotatingLines
+              strokeColor="grey"
+              strokeWidth="5"
+              animationDuration="0.75"
+              width="35"
+              visible={true}
+            />
+          </div>
+        )}
         <Button />
         <Modal />
       </div>
