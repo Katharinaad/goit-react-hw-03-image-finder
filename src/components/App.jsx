@@ -1,67 +1,84 @@
 import { Component } from 'react';
-import { fetchPics, findPictureByName } from './services/api';
-// import { Searchbar } from './Searchbar/Searchbar';
+import 'react-notifications/lib/notifications.css';
+import API from './services/api';
 import { ImageGallery } from './ImageGallery/ImageGallery';
-
 import { Button } from './Button/Button';
-import { Modal } from './Modal/Modal';
+import Modal from './Modal/Modal';
 import { RotatingLines } from 'react-loader-spinner';
+import { Searchbar } from './Searchbar/Searchbar';
+import {
+  NotificationManager,
+  NotificationContainer,
+} from 'react-notifications';
 
 export class App extends Component {
   state = {
-    searchedQuery: null,
+    searchedQuery: '',
     page: 1,
-    pictures: null,
+    pictures: [],
     isLoading: false,
     error: null,
+    isEnd: false,
+    isModalOpen: false,
+    largeImageURL: '',
   };
 
-  fetchAllPics = async () => {
-    try {
+  // componentDidMount() {
+  //   fetchPics();
+  // }
+
+  async componentDidUpdate(_, prevState) {
+    const { page, searchedQuery } = this.state;
+    if (prevState.page !== page || prevState.searchedQuery !== searchedQuery) {
       this.setState({ isLoading: true });
-      const pictures = await fetchPics();
-      console.log('pictures: ', pictures);
 
-      this.setState({ pictures: pictures });
-    } catch (error) {
-    } finally {
-      this.setState({ isLoading: false });
-    }
-  };
+      try {
+        const response = await API.fetchPics(searchedQuery, page);
 
-  fetchPictureByName = async () => {
-    try {
-      this.setState({ isLoading: true });
-      const picture = await findPictureByName(this.state.searchedQuery);
-      console.log('picture: ', picture);
+        this.setState(prevState => ({
+          pictures: [...prevState.pictures, ...response.hits],
+        }));
 
-      this.setState({ pictures: picture });
-    } catch (error) {
-    } finally {
-      this.setState({ isLoading: false });
-    }
-  };
+        if (!response.totalHits) {
+          return NotificationManager.error('No images found');
+        }
 
-  componentDidMount() {
-    this.fetchAllPics();
-  }
-  componentDidUpdate(_, prevState) {
-    if (prevState.searchedQuery !== this.state.searchedQuery) {
-      this.fetchPictureByName();
+        const totalPages = Math.ceil(response.totalHits / 12);
+
+        if (page === totalPages) {
+          this.setState({ isEnd: true });
+          return NotificationManager.info('End of search');
+        }
+      } catch (error) {
+        return NotificationManager.error('Error fetching images');
+      } finally {
+        this.setState({ isLoading: false });
+      }
     }
   }
 
-  handleSearchSubmit = event => {
-    event.preventDefault();
-    console.log('submitted');
+  handleSearchSubmit = searchedQuery => {
+    this.setState({ searchedQuery, pictures: [], page: 1 });
+  };
 
-    const searchedQuery = event.currentTarget.elements.searchQuery.value;
+  loadMore = () => {
+    this.setState(prevState => ({
+      page: prevState.page + 1,
+    }));
+  };
+
+  onOpenModal = url => {
     this.setState({
-      searchedQuery: searchedQuery,
+      isModalOpen: true,
+      largeImageURL: url,
     });
-    console.log(searchedQuery);
+  };
 
-    event.currentTarget.reset();
+  onCloseModal = () => {
+    this.setState({
+      isModalOpen: false,
+      largeImageURL: '',
+    });
   };
 
   render() {
@@ -70,23 +87,16 @@ export class App extends Component {
 
     return (
       <div className="container">
-        <header className="searchbar">
-          <form className="form" onSubmit={this.handleSearchSubmit}>
-            <button type="submit" className="button">
-              <span className="button-label">Search</span>
-            </button>
-            <input
-              className="input"
-              name="searchQuery"
-              type="text"
-              autoComplete="off"
-              autoFocus
-              placeholder="Search images and photos"
-            />
-          </form>
-        </header>
-
-        {showPics && <ImageGallery pictures={this.state.pictures} />}
+        <Searchbar onSubmit={this.handleSearchSubmit} />
+        {showPics > 0 && (
+          <ImageGallery
+            pictures={this.state.pictures}
+            onClick={this.onOpenModal}
+          />
+        )}
+        {showPics > 0 && !this.state.isEnd && (
+          <Button onClick={this.loadMore} />
+        )}
         {this.state.isLoading && (
           <div
             style={{
@@ -100,13 +110,17 @@ export class App extends Component {
               strokeColor="grey"
               strokeWidth="5"
               animationDuration="0.75"
-              width="35"
+              width="45"
               visible={true}
             />
           </div>
         )}
-        <Button />
-        <Modal />
+        {this.isModalOpen && (
+          <Modal onCloseModal={this.onCloseModal}>
+            <img src={this.state.largeImageURL} alt="" />
+          </Modal>
+        )}
+        <NotificationContainer />
       </div>
     );
   }
