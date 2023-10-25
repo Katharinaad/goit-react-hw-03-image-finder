@@ -115,7 +115,7 @@ export class App extends Component {
             />
           </div>
         )}
-        {this.isModalOpen && (
+        {this.state.isModalOpen && (
           <Modal onCloseModal={this.onCloseModal}>
             <img src={this.state.largeImageURL} alt="" />
           </Modal>
