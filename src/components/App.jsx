@@ -23,10 +23,6 @@ export class App extends Component {
     largeImageURL: '',
   };
 
-  // componentDidMount() {
-  //   fetchPics();
-  // }
-
   async componentDidUpdate(_, prevState) {
     const { page, searchedQuery } = this.state;
     if (prevState.page !== page || prevState.searchedQuery !== searchedQuery) {
