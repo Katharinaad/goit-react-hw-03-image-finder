@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import 'react-notifications/lib/notifications.css';
-import API from './services/api';
+import API from '../services/api';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Button } from './Button/Button';
 import Modal from './Modal/Modal';
