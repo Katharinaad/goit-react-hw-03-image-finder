@@ -90,9 +90,7 @@ export class App extends Component {
             onClick={this.onOpenModal}
           />
         )}
-        {showPics > 0 && !this.state.isEnd && (
-          <Button onClick={this.loadMore} />
-        )}
+        {showPics && !this.state.isEnd && <Button onClick={this.loadMore} />}
         {this.state.isLoading && (
           <div
             style={{
